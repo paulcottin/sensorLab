@@ -4,6 +4,9 @@
  */
 package eu.telecomnancy;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,28 +16,41 @@ import java.util.logging.Logger;
  * @author charoy
  */
 public class Client {
-    ISensor sense;
+	
+    SensorRemote sensor;
     Scanner c=new Scanner(System.in);
-    public Client(ISensor sensor) {
-        sense=sensor;
+    
+    public Client() {
+        
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+        try {
+            String name = "Server";
+            Registry registry = LocateRegistry.getRegistry(0);
+            sensor = (SensorRemote) registry.lookup(name);
+        } catch (Exception e) {
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
     }
     
-    public void menu() {
+    public void menu() throws RemoteException {
         String rep="";
         while (!"q".equals(rep)) {
             try {
                 rep= c.nextLine();
                 switch (rep) {
                     case "o": {
-                        sense.onOff();
+                        sensor.onOff();
                         break;
                     }
                     case "s": {
-                        System.out.println("status :"+sense.getStatus());
+                        System.out.println("status :"+sensor.getStatus());
                         break;
                     }
                     case "v": {
-                        System.out.println("value :"+sense.getValue());
+                        System.out.println("value :"+sensor.getValue());
                         break;
                     }
                     default : System.out.println("q: quitter - o: switch - s: status - v: value");

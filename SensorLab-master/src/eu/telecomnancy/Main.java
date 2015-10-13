@@ -4,6 +4,8 @@
  */
 package eu.telecomnancy;
 
+import java.rmi.RemoteException;
+
 /**
  *
  * @author charoy
@@ -14,8 +16,15 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ISensor s=new RandomSensor();
-        Client c=new Client(s);
-        c.menu();
+    	ISensor s = new RandomSensor();
+    	Server server = new Server(s);
+        
+        Client c = new Client();
+        try {
+			c.menu();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
